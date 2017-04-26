@@ -1,0 +1,3 @@
+feedparser
+flask
+PyRSS2Gen
