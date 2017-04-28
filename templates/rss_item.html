@@ -1,0 +1,27 @@
+<i>submitted by <a href="https://www.reddit.com/user/{{ item.author }}">{{ item.author }}</a>
+to <a href="https://www.reddit.com/r/{{ item.subreddit }}">/r/{{ item.subreddit }}</a><br/>
+score: {{ item.score }}<br/>
+
+{% if item.over_18 %}
+<b><font color='#FF0000'>[NSFW]</font></b><br/>
+{% endif %}
+
+<a href="https://www.reddit.com/{{ item.permalink }}">{{ item.num_comments }} comments</a><br/>
+<a href="{{ item.url }}">original</a>
+&nbsp(<a href='https://www.reddit.com/domain/{{ item.domain }}/'>{{ item.domain }}</a>)
+</i>
+<br/><br/>
+
+{% if item.media_embed %}
+<b>Embedded Media:</b>
+{{ item.media_embed.content }}<br/>
+{% endif %}
+
+{% if item.preview %}
+<b>Preview:</b>
+<img src="{{ item.preview.images.0.source.url }}"><br/>
+{% endif %}
+
+{% if item.selftext_html %}
+{{ item.selftext_html}}
+{% endif %}
