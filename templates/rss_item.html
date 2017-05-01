@@ -13,15 +13,13 @@ score: {{ item.score }}<br/>
 <br/><br/>
 
 {% if item.media_embed %}
-<b>Embedded Media:</b>
-{{ item.media_embed.content }}<br/>
+{{ item.media_embed.content|safe }}<br/>
 {% endif %}
 
-{% if item.preview %}
-<b>Preview:</b>
-<img src="{{ item.preview.images.0.source.url }}"><br/>
+{% if item.preview_url %}
+<img src="{{ item.preview_url }}"><br/>
 {% endif %}
 
 {% if item.selftext_html %}
-{{ item.selftext_html}}
+{{ item.selftext_html|safe }}
 {% endif %}

@@ -2,28 +2,56 @@
 
 import datetime
 import io
-import feedparser
 import flask
 import flask_cache
 import PyRSS2Gen
 import requests
+
+__version__ = '0.1'
+
+HEADERS = requests.utils.default_headers()
+HEADERS.update({
+    'User-Agent': 'reddit-rss:v{} (by /u/1337turtle)'.format(__version__)
+})
+
+# Max sure we don't waste bandwidth getting the largest image.
+MAX_HEIGHT = 480
+MAX_WIDTH = 852
 
 app = flask.Flask(__name__)
 # Cache resulting rss feed so we don't spam reddit with too many requests.
 cache = flask_cache.Cache(app, config={'CACHE_TYPE': 'simple'})
 
 
-def parse_rss_feed(rss_url):
-    feed = feedparser.parse(rss_url)
 
+def get_preview_url(item):
+    """Gets image url for displaying as preview.
+    Returns None if not available."""
+    if 'preview' not in item:
+        return None
+    # TODO: Is it possible to have more than one image?
+    images = item['preview']['images'][0]
+
+    # Pull gifs if we can.
+    if 'variants' in images and 'gif' in images['variants']:
+        images = images['variants']['gif']['resolutions']
+    else:
+        images = images['resolutions']
+
+    # Reversed so we go from highest resolution to lowest.
+    # for index in range(len(images)-1, 0, -1):
+    for image in reversed(images):
+        # image = images[index]
+        if image['width'] <= MAX_WIDTH and image['height'] <= MAX_HEIGHT:
+            return image['url']
 
 
 @app.route('/')
 @app.route('/r/<subreddit>')
 @cache.memoize(timeout=60)
 def produce_feed(subreddit='frontpage'):
-    json_url = 'http://reddit.com/r/{}.json'.format(subreddit)
-    response = requests.get(json_url)
+    json_url = 'http://reddit.com/r/{}/.json?raw_json=1'.format(subreddit)
+    response = requests.get(json_url, headers=HEADERS)
     if response.status_code != 200:
         flask.abort(response.status_code)
 
@@ -32,7 +60,7 @@ def produce_feed(subreddit='frontpage'):
     cached_feed = PyRSS2Gen.RSS2(
         generator='reddit-rss.com',
         docs='github.com/jpsnyder/reddit-rss',
-        title='TODO: {}'.format(subreddit),
+        title=subreddit,
         link='TODO: {}'.format(subreddit),
         description=None,
         lastBuildDate=None,
@@ -41,6 +69,12 @@ def produce_feed(subreddit='frontpage'):
     for item in feed['data']['children']:
         item = item['data']
 
+        # Extract preview url.
+        try:
+            item['preview_url'] = get_preview_url(item)
+        except KeyError:
+            item['preview_url'] = None
+
         cached_item = PyRSS2Gen.RSSItem(
             guid=u'https://www.reddit.com/{}'.format(item['permalink']),
             title=item['title'],
@@ -48,34 +82,7 @@ def produce_feed(subreddit='frontpage'):
             description=flask.render_template('rss_item.html', item=item),
             author=item['author'],
             pubDate=datetime.datetime.utcfromtimestamp(item['created_utc']))
-            # thumbnail=item['thumbnail'])
         cached_feed.items.append(cached_item)
-
-
-    # rss_url = 'http://reddit.com/r/{}.rss'.format(subreddit)
-    # feed = feedparser.parse(rss_url)
-    # cached_feed = PyRSS2Gen.RSS2(
-    #     generator=u'reddit-rss.com',
-    #     docs=u'github.com/jpsnyder/reddit-rss',
-    #     title=feed['feed'].get('title'),
-    #     link=feed['feed'].get('link'),
-    #     description=feed['feed'].get('description'),
-    #     lastBuildDate=feed['feed'].get('updated'))
-    #
-    # for entry in feed['entries']:
-    #     # TODO: Add extra info: 'author_detail',
-    #     cached_entry = PyRSS2Gen.RSSItem(
-    #         guid=entry['id'],
-    #         title=entry['title'],
-    #         link=entry['link'],
-    #         description=entry['description'],
-    #         author=entry['author'],
-    #         # summary=entry['summary'],
-    #         pubDate=entry['updated'],
-    #         comments=None,
-    #     )
-    #     cached_feed.items.append(cached_entry)
-
 
     output = io.StringIO()
     cached_feed.write_xml(output)
