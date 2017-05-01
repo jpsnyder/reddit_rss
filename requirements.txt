@@ -1,5 +1,3 @@
-feedparser
 flask
 Flask-Cache
 PyRSS2Gen
-beautifulsoup4
