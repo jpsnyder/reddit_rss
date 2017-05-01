@@ -1,0 +1,31 @@
+<html>
+<head>
+<title>reddit-rss</title>
+<link rel="alternate" type="application/rss+xml" title="reddit-rss" href="{{ request.url_root }}" />
+</head><body>
+
+<h1>reddit-rss</h1>
+
+<p>
+This will generate a full article RSS feed that contains images, text, and videos embedded into
+the feed.
+</p>
+
+<p>
+To use simply add "-rss" at the end of the domain:
+e.g. "reddit-rss.com/r/Bitcoin"
+</p>
+
+<p>
+If you are looking for a RSS of the front page, use the following link:
+    <a href="{{ request.url_root }}r/frontpage">{{ request.url_root }}r/frontpage</a>
+</p>
+
+<i>This was inspired by the work of <a href="http://inline-reddit.com">inline-reddit.com</a></i>
+
+<p>
+<a href="http://github.com/jpsnyder/reddit_rss">source code</a> |
+<a href="mailto:jonsnyder1@gmail.com?subject=reddit-rss">feedback</a>
+</p>
+
+</body></html>

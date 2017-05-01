@@ -46,10 +46,9 @@ def get_preview_url(item):
             return image['url']
 
 
-@app.route('/')
 @app.route('/r/<subreddit>')
 @cache.memoize(timeout=60)
-def produce_feed(subreddit='frontpage'):
+def produce_feed(subreddit):
     json_url = 'http://reddit.com/r/{}/.json?raw_json=1'.format(subreddit)
     response = requests.get(json_url, headers=HEADERS)
     if response.status_code != 200:
@@ -88,6 +87,11 @@ def produce_feed(subreddit='frontpage'):
     cached_feed.write_xml(output)
     output.seek(0)
     return output.read()
+
+
+@app.route('/')
+def index():
+    return flask.render_template('index.html')
 
 
 if __name__ == '__main__':
