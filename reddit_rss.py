@@ -42,7 +42,7 @@ def get_preview_url(item):
     # for index in range(len(images)-1, 0, -1):
     for image in reversed(images):
         # image = images[index]
-        if image['width'] <= MAX_WIDTH and image['height'] <= MAX_HEIGHT:
+        if image['width'] <= MAX_WIDTH or image['height'] <= MAX_HEIGHT:
             return image['url']
 
 
