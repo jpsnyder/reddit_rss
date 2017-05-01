@@ -8,7 +8,7 @@ score: {{ item.score }}<br/>
 
 <a href="https://www.reddit.com/{{ item.permalink }}">{{ item.num_comments }} comments</a><br/>
 <a href="{{ item.url }}">original</a>
-&nbsp(<a href='https://www.reddit.com/domain/{{ item.domain }}/'>{{ item.domain }}</a>)
+(<a href='https://www.reddit.com/domain/{{ item.domain }}/'>{{ item.domain }}</a>)
 </i>
 <br/><br/>
 
@@ -17,7 +17,7 @@ score: {{ item.score }}<br/>
 {% endif %}
 
 {% if item.preview_url %}
-<img src="{{ item.preview_url }}"><br/>
+<a href="{{ item.url }}"><img src="{{ item.preview_url }}"></a><br/>
 {% endif %}
 
 {% if item.selftext_html %}

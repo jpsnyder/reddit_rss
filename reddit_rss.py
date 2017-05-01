@@ -23,7 +23,6 @@ app = flask.Flask(__name__)
 cache = flask_cache.Cache(app, config={'CACHE_TYPE': 'simple'})
 
 
-
 def get_preview_url(item):
     """Gets image url for displaying as preview.
     Returns None if not available."""
