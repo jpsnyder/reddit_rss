@@ -15,8 +15,8 @@ HEADERS.update({
 })
 
 # Max sure we don't waste bandwidth getting the largest image.
-MAX_HEIGHT = 480
-MAX_WIDTH = 852
+MAX_HEIGHT = 700
+MAX_WIDTH = 1000
 
 app = flask.Flask(__name__)
 # Cache resulting rss feed so we don't spam reddit with too many requests.
